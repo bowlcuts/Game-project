@@ -44,6 +44,7 @@ class Player {
             this.jumpCount = 0
         } else this.velocity.y += gravity
         
+
     }
 }
 
@@ -51,8 +52,9 @@ class Platform {
     constructor() {
         this.position = {
             x: 400,
-            y: 500
+            y: 400
         }
+        
 
         this.width = 200
         this.height = 20
@@ -76,7 +78,8 @@ const player = new Player({
 
 })
 
-const platform = new Platform()
+// const platform = new Platform()
+const platforms = [new Platform()]
 
 // logs when you either press or hold down a key instead of listening for one key press can listen for key hold as well
 const keys = {
@@ -99,18 +102,41 @@ function animation(){
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     player.update()
-    platform.draw()
+    platforms.forEach(platform => {
+        platform.draw()
+    })
+    
 
     // when the key is pressed player moves when key is not pressed player stops
-    if (keys.a.pressed) {
-        player.velocity.x = -5
-        
-      } else if (keys.d.pressed) {
+    //&& player stops moving at certain x value
+    if (keys.d.pressed && player.position.x < 500) {
         player.velocity.x = 5
         
-      } else player.velocity.x = 0
+      } else if (keys.a.pressed && player.position.x > 50) {
+        player.velocity.x = -5
+        
+      } else {
+        player.velocity.x = 0
+        //platform moves based on player movement
+        if (keys.d.pressed) {
+            platforms.forEach(platform => {
+                platform.position.x -= 5
+            })     
+        } else if (keys.a.pressed){
+            platforms.forEach(platform => {
+                platform.position.x += 5
+            })
+        }
+    }
 
-      
+      //platform collision detection *code not mine*
+    platforms.forEach(platform => {
+      if (player.position.y + player.height <= platform.position.y && player.position.y + player.height + player.velocity.y >= platform.position.y && player.position.x + player.width >= platform.position.x && player.position.x <= platform.position.x + platform.width) {
+        player.velocity.y = 0
+      }
+    })
+
+
 }
 
 
