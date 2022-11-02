@@ -1,4 +1,4 @@
-import platform from './img/oak_woods_tileset.png'
+import platform from './img/ce80c5c3db6e9b7.png'
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -91,6 +91,10 @@ const platforms = [
         y: 300
     })
 ]
+
+const image = new Image()
+image.src = platform
+console.log(image)
 
 // logs when you either press or hold down a key instead of listening for one key press can listen for key hold as well
 const keys = {
