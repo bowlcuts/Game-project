@@ -1,3 +1,5 @@
+import platform from './img/oak_woods_tileset.png'
+
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
@@ -49,10 +51,10 @@ class Player {
 }
 
 class Platform {
-    constructor() {
+    constructor({x, y}) {
         this.position = {
-            x: 400,
-            y: 400
+            x,
+            y
         }
         
 
@@ -79,7 +81,16 @@ const player = new Player({
 })
 
 // const platform = new Platform()
-const platforms = [new Platform()]
+const platforms = [
+    new Platform({
+        x: 400, 
+        y: 400
+    }),
+    new Platform ({
+        x: 600,
+        y: 300
+    })
+]
 
 // logs when you either press or hold down a key instead of listening for one key press can listen for key hold as well
 const keys = {
@@ -96,6 +107,10 @@ const keys = {
         pressed: false
     }
 }
+
+let distance = 0
+let gameOver = false
+const resultElement = document.getElementById('result')
 
 function animation(){
     window.requestAnimationFrame(animation)
@@ -119,10 +134,12 @@ function animation(){
         player.velocity.x = 0
         //platform moves based on player movement
         if (keys.d.pressed) {
+            distance += 5
             platforms.forEach(platform => {
                 platform.position.x -= 5
             })     
         } else if (keys.a.pressed){
+            distance -= 5
             platforms.forEach(platform => {
                 platform.position.x += 5
             })
@@ -136,15 +153,20 @@ function animation(){
       }
     })
 
+    if (distance >= 1500){
+        console.log('won')
+    }
 
 }
 
+
+// jumping will stop after 4 when on platforms
 
 addEventListener('keydown', ({code}) => {
     switch (code){
         case 'KeyW':
             player.jumpCount++
-            if(player.jumpCount < 3){
+            if(player.jumpCount < 4){
                 console.log('up')
                 player.velocity.y = -15
             } 
