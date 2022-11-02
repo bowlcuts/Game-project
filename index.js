@@ -47,6 +47,23 @@ class Player {
     }
 }
 
+class Platform {
+    constructor() {
+        this.position = {
+            x: 400,
+            y: 500
+        }
+
+        this.width = 200
+        this.height = 20
+    }
+
+    draw(){
+        ctx.fillStyle = 'white'
+        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
+    }
+}
+
 const player = new Player({
     position: {
         x: 300,
@@ -58,6 +75,8 @@ const player = new Player({
     }
 
 })
+
+const platform = new Platform()
 
 // logs when you either press or hold down a key instead of listening for one key press can listen for key hold as well
 const keys = {
@@ -80,6 +99,7 @@ function animation(){
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     player.update()
+    platform.draw()
 
     // when the key is pressed player moves when key is not pressed player stops
     if (keys.a.pressed) {
@@ -89,6 +109,8 @@ function animation(){
         player.velocity.x = 5
         
       } else player.velocity.x = 0
+
+      
 }
 
 
@@ -99,19 +121,15 @@ addEventListener('keydown', ({code}) => {
             if(player.jumpCount < 3){
                 console.log('up')
                 player.velocity.y = -15
-            }
-            
+            } 
             break;
         case 'KeyS':
-            console.log('down')
             keys.s.pressed = true
             break;
         case 'KeyA':
-            console.log('left')
             keys.a.pressed = true
             break; 
         case 'KeyD':
-            console.log('right')
             keys.d.pressed = true
             break;           
     }
@@ -119,20 +137,16 @@ addEventListener('keydown', ({code}) => {
 
 addEventListener('keyup', ({code}) => {
     switch (code){
-        case 'KeyW':
-            console.log('up')
+        case 'KeyW':    
             keys.w.pressed = false
             break;
-        case 'KeyS':
-            console.log('down')
+        case 'KeyS':        
             keys.s.pressed = false
             break;
         case 'KeyA':
-            console.log('left')
             keys.a.pressed = false
             break; 
         case 'KeyD':
-            console.log('right')
             keys.d.pressed = false
             break;           
     }
