@@ -1,6 +1,4 @@
-addEventListener('load', function() {
-
-
+addEventListener('load', function(){
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -12,28 +10,29 @@ ctx.fillRect (0, 0, canvas.width, canvas.height,)
 
 const gravity = 0.7
 
+
 class Player {
     constructor({
         position,
         velocity,
-        sprites,
-        color =  'red'
+
 
     }){
         // these are the players properties
         this.position = position
         this.velocity = velocity
-        this.color = color
         this.height = 120
         this.width = 40
         this.jumpCount = 0
-        this.image =''
+        this.image = document.getElementById('playerImage')
+       
 
     }
     //the draw function is what creates the player
     draw(){
         ctx.fillStyle = 'red'
-        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)        
+        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)   
+        ctx.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)     
     }
 
 
@@ -51,6 +50,14 @@ class Player {
         
 
     }
+}
+
+class Background {
+
+}
+
+class Enemy {
+    
 }
 
 class Platform {
@@ -86,7 +93,6 @@ const player = new Player({
 
 })
 
-
 // const platform = new Platform()
 const platforms = [
     new Platform({
@@ -117,14 +123,25 @@ const keys = {
     }
 }
 
+
+function enemy() {
+    
+}
+
+function status(){
+
+}
+
 let distance = 0
-let gameOver = false
-const resultElement = document.getElementById('result')
+// let gameOver = false
+// const resultElement = document.getElementById('result')
 
 function animation(){
     window.requestAnimationFrame(animation)
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(playerImage, 0, 0)
+    // ctx.clearRect(0, 0, canvas.width, canvas.height)
     player.update()
     platforms.forEach(platform => {
         platform.draw()
@@ -168,7 +185,6 @@ function animation(){
 
 }
 
-
 // jumping will stop after 4 when on platforms
 
 addEventListener('keydown', ({code}) => {
@@ -176,7 +192,6 @@ addEventListener('keydown', ({code}) => {
         case 'KeyW':
             player.jumpCount++
             if(player.jumpCount < 4){
-                console.log('up')
                 player.velocity.y = -15
             } 
             break;
