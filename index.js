@@ -1,4 +1,6 @@
-import platform from './img/ce80c5c3db6e9b7.png'
+addEventListener('load', function() {
+
+
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -25,6 +27,7 @@ class Player {
         this.height = 120
         this.width = 40
         this.jumpCount = 0
+        this.image =''
 
     }
     //the draw function is what creates the player
@@ -51,7 +54,7 @@ class Player {
 }
 
 class Platform {
-    constructor({x, y}) {
+    constructor({x, y,}) {
         this.position = {
             x,
             y
@@ -60,13 +63,16 @@ class Platform {
 
         this.width = 200
         this.height = 20
+        
     }
 
     draw(){
+        
         ctx.fillStyle = 'white'
-        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
+        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)     
     }
 }
+
 
 const player = new Player({
     position: {
@@ -80,11 +86,12 @@ const player = new Player({
 
 })
 
+
 // const platform = new Platform()
 const platforms = [
     new Platform({
         x: 400, 
-        y: 400
+        y: 400,
     }),
     new Platform ({
         x: 600,
@@ -92,9 +99,7 @@ const platforms = [
     })
 ]
 
-const image = new Image()
-image.src = platform
-console.log(image)
+
 
 // logs when you either press or hold down a key instead of listening for one key press can listen for key hold as well
 const keys = {
@@ -205,3 +210,5 @@ addEventListener('keyup', ({code}) => {
 })
 
 animation()
+
+})
