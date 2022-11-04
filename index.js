@@ -41,10 +41,10 @@ class Player {
     draw(){
         // ctx.fillStyle = 'red'
         // ctx.fillRect(this.position.x, this.position.y, this.width, this.height)   
-        ctx.strokeRect(this.position.x, this.position.y, this.width, this.height)
-        ctx.beginPath()
-        ctx.arc(this.position.x, this.position.y, this.width/2, 0, Math.PI * 2)
-        ctx.stroke()
+        // ctx.strokeRect(this.position.x, this.position.y, this.width, this.height)
+        // ctx.beginPath()
+        // ctx.arc(this.position.x, this.position.y, this.width/2, 0, Math.PI * 2)
+        // ctx.stroke()
         ctx.drawImage(this.image, this.frameX, this.frameY, this.width, this.height, this.position.x, this.position.y, this.width, this.height)     
     }
 
@@ -122,10 +122,10 @@ class Enemy {
         
     }
     draw(){
-        ctx.strokeRect(this.x, this.y, this.width, this.height)
-        ctx.beginPath()
-        ctx.arc(this.x, this.y, this.width/2, 0, Math.PI * 2)
-        ctx.stroke()
+        // ctx.strokeRect(this.x, this.y, this.width, this.height)
+        // ctx.beginPath()
+        // ctx.arc(this.x, this.y, this.width/2, 0, Math.PI * 2)
+        // ctx.stroke()
         ctx.drawImage(this.image, this.frameX * this.width, 0, this.width, this.height, this.x, this.y, this.width, this.height)
     }
     update(changeTime){
