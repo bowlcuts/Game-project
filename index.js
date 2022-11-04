@@ -10,6 +10,9 @@ ctx.fillRect (0, 0, canvas.width, canvas.height,)
 
 const gravity = 0.7
 
+let mobs = []
+let score = 0
+let gameOver = false
 
 class Player {
     constructor({
@@ -21,29 +24,57 @@ class Player {
         // these are the players properties
         this.position = position
         this.velocity = velocity
-        this.height = 120
-        this.width = 40
+        this.height = 62
+        this.width = 45
         this.jumpCount = 0
         this.image = document.getElementById('playerImage')
+        this.frameX = 0
+        this.frameY = 0
+        this.maxFrame = 1
+        this.fps = 20
+        this.frameTimer = 0
+        this.frameInterval = 1000/this.fps
        
 
     }
     //the draw function is what creates the player
     draw(){
-        ctx.fillStyle = 'red'
-        ctx.fillRect(this.position.x, this.position.y, this.width, this.height)   
-        ctx.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)     
+        // ctx.fillStyle = 'red'
+        // ctx.fillRect(this.position.x, this.position.y, this.width, this.height)   
+        ctx.strokeRect(this.position.x, this.position.y, this.width, this.height)
+        ctx.beginPath()
+        ctx.arc(this.position.x, this.position.y, this.width/2, 0, Math.PI * 2)
+        ctx.stroke()
+        ctx.drawImage(this.image, this.frameX, this.frameY, this.width, this.height, this.position.x, this.position.y, this.width, this.height)     
     }
 
 
     //this method loops through the player class and calls it (doesnt animate it just loops)
-    update() {
+    update(changeTime, mobs) {
+        mobs.forEach(enemy => {
+            const dx = enemy.x - this.x
+            const dy = enemy.y - this.y
+            const distance = Math.sqrt(dx * dx + dy * dy)
+            if(distance < enemy.width/2 + this.width/2){
+                gameOver = true
+            }
+        })
+        //animations
+        if(this.frameTimer > this.frameInterval){
+            if (this.frameX >= this.maxFrame) this.frameX = 0
+            else this.frameX++
+            this.frameTimer = 0
+        }else {
+            this.frameTimer += changeTime
+        }
+
+        //everything else
         this.draw()
         this.position.y += this.velocity.y  
         this.position.x += this.velocity.x
         
         //this.position.y + this.height = to the size of the rect | this.velocity is the speed at which the rect is falling
-        if(this.position.y + this.height + this.velocity.y >= canvas.height){
+        if(this.position.y + this.height + this.velocity.y >= canvas.height - 96){
             this.velocity.y = 0
             this.jumpCount = 0
         } else this.velocity.y += gravity
@@ -53,11 +84,63 @@ class Player {
 }
 
 class Background {
+    constructor(position){
+        this.position = position
+        this.image = document.getElementById('backgroundImage')
+        this.width = 1024
+        this.height = 576
+        this.x =  0
+        this.y = 0
+        this.speed = 5
 
+    }
+    draw(){
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
+        ctx.drawImage(this.image, this.x + this.width, this.y, this.width, this.height)
+
+    }
+    update(){
+        this.x -= this.speed
+        if (this.x < 0 - this.width) this.x = 0
+    }
 }
 
 class Enemy {
-    
+    constructor (){
+        this.width = 140
+        this.height = 140
+        this.image = document.getElementById('enemyImage')
+        this.x = canvas.width
+        this.y = canvas.height - this.height - 55
+        this.frameX = 0
+        this.speed = 10
+        this.maxFrame = 1
+        this.fps = 20
+        this.frameTimer = 0
+        this.frameInterval = 1000/this.fps
+        this.delete = false
+        
+    }
+    draw(){
+        ctx.strokeRect(this.x, this.y, this.width, this.height)
+        ctx.beginPath()
+        ctx.arc(this.x, this.y, this.width/2, 0, Math.PI * 2)
+        ctx.stroke()
+        ctx.drawImage(this.image, this.frameX * this.width, 0, this.width, this.height, this.x, this.y, this.width, this.height)
+    }
+    update(changeTime){
+        if(this.frameTimer > this.frameInterval){
+            if (this.frameX >= this.maxFrame) this.frameX = 0
+            else this.frameX++
+            this.frameTimer = 0
+        } else {
+            this.frameTimer += changeTime
+        }
+        this.x -= this.speed;
+        if (this.x < 0 - this.width) {
+            this.delete = true;
+            score++
+    }}
 }
 
 class Platform {
@@ -80,6 +163,7 @@ class Platform {
     }
 }
 
+const background = new Background(canvas.width, canvas.height)
 
 const player = new Player({
     position: {
@@ -93,16 +177,11 @@ const player = new Player({
 
 })
 
+// const enemy1 = new Enemy(canvas.width, canvas.height)
+
 // const platform = new Platform()
 const platforms = [
-    new Platform({
-        x: 400, 
-        y: 400,
-    }),
-    new Platform ({
-        x: 600,
-        y: 300
-    })
+
 ]
 
 
@@ -123,29 +202,71 @@ const keys = {
     }
 }
 
+let distance = 0
 
-function enemy() {
-    
+let lastTime = 0
+let timer = 0
+let interval = 1000
+let randomInterval = Math.random() * 1000 + 500
+
+//spawning new mobs
+function enemy(changeTime) {
+    if (timer > interval + randomInterval) {
+        mobs.push(new Enemy(canvas.width, canvas.height))
+        randomInterval = Math.random() * 1000 + 500
+        timer = 0
+    } else {
+        timer += changeTime
+    }
+    mobs.forEach(enemy => {
+        enemy.draw(ctx)
+        enemy.update(changeTime)
+    })
+    mobs = mobs.filter(enemy => !enemy.delete)
 }
 
 function status(){
-
+    ctx.font = '30px sans-serif'
+    ctx.fillStyle = 'black'
+    ctx.fillText('Score: ' + score, 20, 50)
+    ctx.fillStyle = 'white'
+    ctx.fillText('Score: ' + score, 22, 52)
+    // if(gameOver){
+    //     ctx.textAlign = 'center'
+    //     ctx.fillStyle = 'black'
+    //     ctx.fillText('Game Over', canvas.width/2, 200)
+    //     ctx.fillStyle = 'white'
+    //     ctx.fillText('Game Over', canvas.width/2, 202)
+    // }
+    if (gameOver || distance === 2000){
+        ctx.textAlign = 'center'
+        ctx.fillStyle = 'black'
+        ctx.fillText('Game Over', canvas.width/2, 200)
+        ctx.fillStyle = 'white'
+        ctx.fillText('Game Over', canvas.width/2, 202)
+    }
 }
 
-let distance = 0
-// let gameOver = false
+
+
 // const resultElement = document.getElementById('result')
 
-function animation(){
-    window.requestAnimationFrame(animation)
-    ctx.fillStyle = 'black'
+function animation(timeStamp){
+    const changeTime = timeStamp - lastTime
+    lastTime = timeStamp
+    if (!gameOver) requestAnimationFrame(animation)
+    // ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.drawImage(playerImage, 0, 0)
     // ctx.clearRect(0, 0, canvas.width, canvas.height)
-    player.update()
+    background.draw()
+    background.update()
+    player.update(changeTime, mobs)
+    enemy(changeTime)
+    status(ctx)
     platforms.forEach(platform => {
         platform.draw()
     })
+   
     
 
     // when the key is pressed player moves when key is not pressed player stops
@@ -179,9 +300,9 @@ function animation(){
       }
     })
 
-    if (distance >= 1500){
-        console.log('won')
-    }
+    // if (distance >= 1500){
+    //     console.log('won')
+    // }
 
 }
 
@@ -224,6 +345,6 @@ addEventListener('keyup', ({code}) => {
     }
 })
 
-animation()
+animation(0)
 
 })

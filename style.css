@@ -1,6 +1,13 @@
 body {
     background-color: lightgray;
 }
+
+#playerImage, 
+#backgroundImage, 
+#enemyImage {
+    display: none;
+}
+
 #canvas {
     border: solid black 1px;
     position: absolute;
@@ -9,7 +16,5 @@ body {
     transform: translate(-50%, -50%);
     border: 5px solid white;
 }
-/* #playerImage, #backgroundImage, #enemyImage {
-    
-} */
+
 
